@@ -1,0 +1,16 @@
+services:
+  postgresL:
+    image: postgres:16
+    container_name: haupcar-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: haupcar
+      POSTGRES_PASSWORD: car_password
+      POSTGRES_DB: haupcar
+    ports:
+      - "5432:5432"
+    volumes:
+      - haupcar_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  haupcar_postgres_data:
