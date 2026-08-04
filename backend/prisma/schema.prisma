@@ -1,0 +1,20 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource haupcar {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Car {
+    id                 String  @id @default(uuid())
+    registrationNumber String  @unique
+    brand              String
+    model              String
+    notes              String?
+    createdAt          String
+    updatedAt          String
+
+    @@map("cars")
+}
