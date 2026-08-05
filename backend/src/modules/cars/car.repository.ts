@@ -1,4 +1,3 @@
-import { prisma } from './../../database/prisma';
 import { PrismaClient } from '@prisma/client';
 
 import type {
@@ -29,6 +28,17 @@ export class CarRepository {
         return this.prisma.car.findUnique({
             where: {
                 registrationNumber
+            }
+        })
+    }
+
+    async create(data: CreateCarInput) {
+        return this.prisma.car.create({
+            data: {
+                registrationNumber: data.registrationNumber,
+                brand: data.brand,
+                model: data.model,
+                notes: data.notes
             }
         })
     }
