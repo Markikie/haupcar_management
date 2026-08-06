@@ -14,7 +14,7 @@ import type { CarService } from "./car.service"
 export class CarController {
     constructor(
         private readonly carService: CarService
-    ) {}
+    ) { }
 
     getAll = async (
         _req: Request,
@@ -60,6 +60,25 @@ export class CarController {
             next(error);
         }
     };
+
+    create = async (
+        req: Request,
+        res: Response,
+        next: NextFunction
+    ): Promise<void> => {
+        try {
+            const input = req.body as CreateCarInput;
+
+            const car = await this.carService.create(input);
+
+            res.status(201).json({
+                success: true,
+                data: car
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 
     update = async (
         req: Request,
