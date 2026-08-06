@@ -1,10 +1,11 @@
 export interface Car {
+    id: string;
     registrationNumber: string;
     brand: string;
     model: string;
     notes?: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export interface CreateCarInput {
