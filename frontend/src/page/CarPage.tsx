@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 
-import { getCars, createCar } from "../api/car.api";
-
-import type { Car, CreateCarInput } from "../types/car";
+import {
+  createCar,
+  deleteCar,
+  getCars,
+  updateCar
+} from "../api/car.api";
 
 import CarForm from "../components/CarForm";
+
+import type {
+  Car,
+  CreateCarInput
+} from "../types/car";
 
 function CarsPage() {
   const [cars, setCars] = useState<Car[]>([]);
@@ -12,6 +20,8 @@ function CarsPage() {
   const [error, setError] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingCar, setEditingCar] =
+    useState<Car | null>(null);
 
   useEffect(() => {
     let ignore = false;
@@ -26,7 +36,9 @@ function CarsPage() {
       } catch (error) {
         if (!ignore) {
           setError(
-            error instanceof Error ? error.message : "Unable to load cars",
+            error instanceof Error
+              ? error.message
+              : "Unable to load cars"
           );
         }
       } finally {
@@ -43,27 +55,78 @@ function CarsPage() {
     };
   }, []);
 
-  if (loading) {
-    return <p>กำลังโหลดข้อมูลรถ...</p>;
-  }
-
-  async function handleCreateCar(
+  async function handleSubmitCar(
     input: CreateCarInput
-): Promise<void> {
+  ): Promise<void> {
     try {
       setSubmitting(true);
       setError("");
 
-      const createdCar = await createCar(input);
+      if (editingCar) {
+        const updatedCar = await updateCar(
+          editingCar.id,
+          input
+        );
 
-      setCars((current) => [createdCar, ...current]);
+        setCars((current) =>
+          current.map((car) =>
+            car.id === updatedCar.id
+              ? updatedCar
+              : car
+          )
+        );
+      } else {
+        const createdCar = await createCar(input);
+
+        setCars((current) => [
+          createdCar,
+          ...current
+        ]);
+      }
 
       setShowForm(false);
+      setEditingCar(null);
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Unable to create car");
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to save car"
+      );
     } finally {
       setSubmitting(false);
     }
+  }
+
+  async function handleDeleteCar(
+    id: string
+  ): Promise<void> {
+    const confirmed = window.confirm(
+      "ต้องการลบข้อมูลรถคันนี้หรือไม่?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setError("");
+
+      await deleteCar(id);
+
+      setCars((current) =>
+        current.filter((car) => car.id !== id)
+      );
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete car"
+      );
+    }
+  }
+
+  if (loading) {
+    return <p>กำลังโหลดข้อมูลรถ...</p>;
   }
 
   return (
@@ -74,26 +137,61 @@ function CarsPage() {
           <p>จัดการข้อมูลรถยนต์ของบริษัท</p>
         </div>
 
-        <button type="button" onClick={() => setShowForm(true)}>
+        <button
+          type="button"
+          onClick={() => {
+            setEditingCar(null);
+            setShowForm(true);
+          }}
+        >
           Add New Car
         </button>
       </div>
 
-      {error && <p className="error-message">{error}</p>}
-    
-    {showForm && (
-      <CarForm
-        onSubmit={handleCreateCar}
-        onCancel={() => setShowForm(false)}
-        submitting={submitting}
-      />
-    )}
+      {error && (
+        <p className="error-message">
+          {error}
+        </p>
+      )}
 
-    {cars.length === 0 ? (
-      <p>ยังไม่มีข้อมูลรถยนต์</p>
-    ) : (
-      <div className="table-wrapper">
-        <table>
+      {showForm && (
+        <CarForm
+          key={editingCar?.id ?? "new"}
+          initialValue={
+            editingCar
+              ? {
+                  registrationNumber:
+                    editingCar.registrationNumber,
+                  brand: editingCar.brand,
+                  model: editingCar.model,
+                  notes: editingCar.notes ?? ""
+                }
+              : undefined
+          }
+          title={
+            editingCar
+              ? "Edit Car"
+              : "Add New Car"
+          }
+          submitLabel={
+            editingCar
+              ? "Update Car"
+              : "Save Car"
+          }
+          onSubmit={handleSubmitCar}
+          onCancel={() => {
+            setShowForm(false);
+            setEditingCar(null);
+          }}
+          submitting={submitting}
+        />
+      )}
+
+      {cars.length === 0 ? (
+        <p>ยังไม่มีข้อมูลรถยนต์</p>
+      ) : (
+        <div className="table-wrapper">
+          <table>
             <thead>
               <tr>
                 <th>Registration Number</th>
@@ -112,9 +210,24 @@ function CarsPage() {
                   <td>{car.model}</td>
                   <td>{car.notes ?? "-"}</td>
                   <td>
-                    <button type="button">Edit</button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditingCar(car);
+                        setShowForm(true);
+                      }}
+                    >
+                      Edit
+                    </button>
 
-                    <button type="button">Delete</button>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleDeleteCar(car.id)
+                      }
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}

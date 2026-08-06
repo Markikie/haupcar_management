@@ -1,65 +1,73 @@
 import type {
-    Car,
-    CreateCarInput,
-    UpdateCarInput,
+  Car,
+  CreateCarInput,
+  UpdateCarInput
 } from "../types/car";
 
-const API_URL = "http://localhost:3000/api/v1"
+const API_URL =
+  import.meta.env.VITE_API_URL ??
+  "http://localhost:3000/api/v1";
 
 interface ApiResponse<T> {
-    success: boolean;
-    data: T;
-    message?: string;
+  success: boolean;
+  data: T;
+  message?: string;
 }
 
 async function request<T>(
-    path: string,
-    options?: RequestInit
+  path: string,
+  options?: RequestInit
 ): Promise<T> {
-    const response = await fetch(
-        `${API_URL}${path}`,
-        {
-            headers: {
-                "Content-Type": "application/json",
-                ...options?.headers,
-            },
-            ...options,
-        }
-    );
+  const response = await fetch(
+    `${API_URL}${path}`,
+    {
+      headers: {
+        "Content-Type": "application/json",
+        ...options?.headers
+      },
+      ...options
+    }
+  );
 
-    const result =
+  const result =
     (await response.json()) as ApiResponse<T>;
 
-    if (!response.ok) {
-        throw new Error(
-            result.message ?? `Request failed`
-        );
-    }
+  if (!response.ok) {
+    throw new Error(
+      result.message ?? "Request failed"
+    );
+  }
 
-    return result.data;
+  return result.data;
 }
 
 export function getCars(): Promise<Car[]> {
-    return request<Car[]>("/cars");
+  return request<Car[]>("/cars");
+}
+
+export function getCarById(
+  id: string
+): Promise<Car> {
+  return request<Car>(`/cars/${id}`);
 }
 
 export function createCar(
-    input: CreateCarInput
+  input: CreateCarInput
 ): Promise<Car> {
-    return request<Car>("/cars", {
-        method: "POST",
-        body: JSON.stringify(input),
-    });
+  return request<Car>("/cars", {
+    method: "POST",
+    body: JSON.stringify(input)
+  });
 }
 
 export function updateCar(
-    id: string,
-    input: UpdateCarInput
+  id: string,
+  input: UpdateCarInput
 ): Promise<Car> {
-    return request<Car>(`/cars/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(input),
-    });
+  return request<Car>(`/cars/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(input)
+  });
 }
 
 export async function deleteCar(

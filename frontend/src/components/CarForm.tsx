@@ -3,22 +3,31 @@ import { useState } from "react";
 import type { CreateCarInput } from "../types/car";
 
 interface CarFormProps {
+  initialValue?: CreateCarInput;
+  title?: string;
+  submitLabel?: string;
   onSubmit: (input: CreateCarInput) => Promise<void>;
   onCancel: () => void;
   submitting?: boolean;
 }
 
+const emptyForm: CreateCarInput = {
+  registrationNumber: "",
+  brand: "",
+  model: "",
+  notes: ""
+};
+
 function CarForm({
+  initialValue = emptyForm,
+  title = "Add New Car",
+  submitLabel = "Save Car",
   onSubmit,
   onCancel,
   submitting = false
 }: CarFormProps) {
-  const [form, setForm] = useState<CreateCarInput>({
-    registrationNumber: "",
-    brand: "",
-    model: "",
-    notes: ""
-  });
+  const [form, setForm] =
+    useState<CreateCarInput>(initialValue);
 
   function handleChange(
     event: React.ChangeEvent<
@@ -42,7 +51,7 @@ function CarForm({
 
   return (
     <form className="car-form" onSubmit={handleSubmit}>
-      <h2>Add New Car</h2>
+      <h2>{title}</h2>
 
       <label>
         Registration Number
@@ -50,7 +59,6 @@ function CarForm({
           name="registrationNumber"
           value={form.registrationNumber}
           onChange={handleChange}
-          placeholder="กก-1234"
           required
         />
       </label>
@@ -61,7 +69,6 @@ function CarForm({
           name="brand"
           value={form.brand}
           onChange={handleChange}
-          placeholder="Toyota"
           required
         />
       </label>
@@ -72,7 +79,6 @@ function CarForm({
           name="model"
           value={form.model}
           onChange={handleChange}
-          placeholder="Yaris"
           required
         />
       </label>
@@ -81,26 +87,19 @@ function CarForm({
         Notes
         <textarea
           name="notes"
-          value={form.notes}
+          value={form.notes ?? ""}
           onChange={handleChange}
-          placeholder="หมายเหตุ"
           rows={4}
         />
       </label>
 
       <div className="form-actions">
-        <button
-          type="button"
-          onClick={onCancel}
-        >
+        <button type="button" onClick={onCancel}>
           Cancel
         </button>
 
-        <button
-          type="submit"
-          disabled={submitting}
-        >
-          {submitting ? "Saving..." : "Save Car"}
+        <button type="submit" disabled={submitting}>
+          {submitting ? "Saving..." : submitLabel}
         </button>
       </div>
     </form>
