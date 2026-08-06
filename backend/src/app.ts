@@ -1,9 +1,13 @@
 import express from "express"
+import cors from "cors"
 
 import { errorMiddleware } from "./middlewares/error.middleware"
 import { carRouter } from "./modules/cars/car.routes"
 
 const app =  express()
+app.use(cors({
+  origin: "http://localhost:5173",
+}));
 
 app.use(express.json());
 
