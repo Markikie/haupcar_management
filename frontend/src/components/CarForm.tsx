@@ -4,7 +4,6 @@ import type { CreateCarInput } from "../types/car";
 
 interface CarFormProps {
   initialValue?: CreateCarInput;
-  title?: string;
   submitLabel?: string;
   onSubmit: (input: CreateCarInput) => Promise<void>;
   onCancel: () => void;
@@ -20,7 +19,6 @@ const emptyForm: CreateCarInput = {
 
 function CarForm({
   initialValue = emptyForm,
-  title = "Add New Car",
   submitLabel = "Save Car",
   onSubmit,
   onCancel,
@@ -51,7 +49,6 @@ function CarForm({
 
   return (
     <form className="car-form" onSubmit={handleSubmit}>
-      <h2>{title}</h2>
 
       <label>
         Registration Number

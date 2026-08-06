@@ -1,11 +1,26 @@
 import "./App.css";
-import CarPage from "./page/CarPage";
+import CarsPage from "./page/CarPage";
+
 
 function App() {
   return (
-    <main className="app-container">
-      <h1>HAUPCAR Car Management</h1>
-      <CarPage />
+     <main className="app-container">
+      <header className="app-header">
+        <div className="brand">
+
+          <div>
+            <strong>HAUPCAR</strong>
+            <span>CAR MANAGEMENT</span>
+          </div>
+        </div>
+
+        <div className="system-status">
+          <span className="status-dot" />
+          System Online
+        </div>
+      </header>
+
+      <CarsPage />
     </main>
   );
 }

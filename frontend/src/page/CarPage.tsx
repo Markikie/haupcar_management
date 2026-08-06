@@ -8,6 +8,7 @@ import {
 } from "../api/car.api";
 
 import CarForm from "../components/CarForm";
+import Modal from "../components/Modal";
 
 import type {
   Car,
@@ -155,37 +156,40 @@ function CarsPage() {
       )}
 
       {showForm && (
-        <CarForm
-          key={editingCar?.id ?? "new"}
-          initialValue={
-            editingCar
-              ? {
-                  registrationNumber:
-                    editingCar.registrationNumber,
-                  brand: editingCar.brand,
-                  model: editingCar.model,
-                  notes: editingCar.notes ?? ""
-                }
-              : undefined
-          }
-          title={
-            editingCar
-              ? "Edit Car"
-              : "Add New Car"
-          }
-          submitLabel={
-            editingCar
-              ? "Update Car"
-              : "Save Car"
-          }
-          onSubmit={handleSubmitCar}
-          onCancel={() => {
-            setShowForm(false);
-            setEditingCar(null);
-          }}
-          submitting={submitting}
-        />
-      )}
+  <Modal
+  
+    onClose={() => {
+      setShowForm(false);
+      setEditingCar(null);
+    }}
+  >
+    <CarForm
+      key={editingCar?.id ?? "new"}
+      initialValue={
+        editingCar
+          ? {
+              registrationNumber:
+                editingCar.registrationNumber,
+              brand: editingCar.brand,
+              model: editingCar.model,
+              notes: editingCar.notes ?? ""
+            }
+          : undefined
+      }
+      submitLabel={
+        editingCar
+          ? "Update Car"
+          : "Save Car"
+      }
+      onSubmit={handleSubmitCar}
+      onCancel={() => {
+        setShowForm(false);
+        setEditingCar(null);
+      }}
+      submitting={submitting}
+    />
+  </Modal>
+)}
 
       {cars.length === 0 ? (
         <p>ยังไม่มีข้อมูลรถยนต์</p>
