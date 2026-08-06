@@ -133,7 +133,14 @@ registrationNumber;
     }
 
     async delete(id: string) {
-        const existingCar = await this.carRepository.findById(id);
+        const existingCar = 
+        await this.carRepository.findById(id);
+
+        if (!existingCar) {
+            throw new AppError(404, "Car not found");
+        }
+
+        return this.carRepository.delete(id);
     }
 }
 
